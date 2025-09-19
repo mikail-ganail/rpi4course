@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ганеев Усман Рустемович</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Список задач</h1>
+      </header>
+
+      <div class="new-task-section">
+        <h2>Новая задача</h2>
+        <div class="task-input-container">
+          <input
+            type="text"
+            placeholder="Название задачи..."
+            class="task-input"
+          />
+          <button class="add-button">+ Добавить</button>
+        </div>
+      </div>
+
+      <div class="tasks-container">
+        <div class="task-column backlog">
+          <div class="column-header">Бэклог</div>
+          <div class="tasks-list">
+            <div class="task-card backlog-task">Выучить JS</div>
+            <div class="task-card backlog-task">Выучить React</div>
+            <div class="task-card backlog-task">Сделать домашку</div>
+          </div>
+        </div>
+
+        <div class="task-column in-progress">
+          <div class="column-header">В процессе</div>
+          <div class="tasks-list">
+            <div class="task-card progress-task">Выпить смузи</div>
+            <div class="task-card progress-task">Попить воды</div>
+          </div>
+        </div>
+
+        <div class="task-column done">
+          <div class="column-header">Готово</div>
+          <div class="tasks-list">
+            <div class="task-card done-task">Позвонить маме</div>
+            <div class="task-card done-task">Погладить кота</div>
+          </div>
+        </div>
+
+        <div class="task-column trash">
+          <div class="column-header">Корзина</div>
+          <div class="tasks-list">
+            <div class="task-card trash-task">Сходить погулять</div>
+            <div class="task-card trash-task">Прочитать Войну и Мир</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="clear-button">× Очистить</button>
+    </div>
+  </body>
+</html>

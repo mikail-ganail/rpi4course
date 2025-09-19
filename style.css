@@ -1,0 +1,176 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #e8f4fc; /* Более светлый оттенок */
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1250px; /* Немного шире */
+  margin: 0 auto;
+  padding: 25px; /* Увеличил отступы */
+}
+
+.header {
+  background-color: #4457c5; /* Более насыщенный синий */
+  color: white;
+  text-align: center;
+  padding: 25px; /* Выше заголовок */
+  margin-bottom: 35px; /* Больше отступ */
+  border-radius: 10px; /* Более скругленные углы */
+  height: 90px; /* Фиксированная высота */
+}
+
+.header h1 {
+  font-size: 30px; /* Крупнее заголовок */
+  font-weight: bold;
+}
+
+.new-task-section {
+  background-color: white;
+  padding: 25px; /* Больше внутренних отступов */
+  border-radius: 10px;
+  margin-bottom: 35px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12); /* Более выраженная тень */
+  min-height: 120px; /* Минимальная высота */
+}
+
+.new-task-section h2 {
+  font-size: 20px; /* Крупнее подзаголовок */
+  font-weight: bold;
+  margin-bottom: 18px;
+  color: #444; /* Темнее текст */
+}
+
+.task-input-container {
+  display: flex;
+  gap: 12px; /* Больше расстояние между элементами */
+  align-items: center;
+  height: 55px; /* Фиксированная высота контейнера */
+}
+
+.task-input {
+  flex: 1;
+  padding: 14px 18px; /* Больше отступы */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px; /* Более скругленные углы */
+  font-size: 16px;
+  outline: none;
+  height: 100%; /* Занимает всю высоту контейнера */
+}
+
+.task-input:focus {
+  border-color: #1e88e5; /* Более темный синий */
+}
+
+.add-button {
+  background-color: #1e88e5; /* Более темный синий */
+  color: white;
+  border: none;
+  padding: 14px 22px; /* Больше кнопка */
+  border-radius: 8px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  height: 100%; /* Занимает всю высоту контейнера */
+}
+
+.tasks-container {
+  display: flex;
+  gap: 25px; /* Больше расстояние между колонками */
+  margin-bottom: 35px;
+}
+
+.task-column {
+  flex: 1;
+  min-height: 350px; /* Выше колонки */
+  min-width: 280px; /* Минимальная ширина колонок */
+}
+
+.column-header {
+  padding: 14px 18px; /* Больше заголовки колонок */
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 18px;
+  text-align: center;
+  height: 50px; /* Фиксированная высота заголовка */
+}
+
+.backlog-task {
+  background-color: #f5f5f5; /* Слегка светлее */
+  color: #444; /* Темнее текст */
+}
+
+.backlog .column-header {
+  background-color: #f5f5f5;
+  color: #444;
+}
+
+.in-progress .column-header {
+  background-color: #e8f4fd; /* Слегка изменил оттенок */
+  color: #1565c0; /* Темнее синий */
+}
+
+.done .column-header {
+  background-color: #eaf7ea; /* Слегка светлее */
+  color: #27632a; /* Темнее зеленый */
+}
+
+.trash .column-header {
+  background-color: #ffebee;
+  color: #b71c1c; /* Темнее красный */
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Больше расстояние между карточками */
+}
+
+.task-card {
+  background-color: white;
+  padding: 18px; /* Больше отступы в карточках */
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid transparent; /* Толще акцентная полоса */
+  min-height: 90px; /* Минимальная высота карточек */
+}
+
+.backlog-task {
+  border-left-color: #e0e0e0; /* Слегка изменил цвет */
+}
+
+.progress-task {
+  border-left-color: #1565c0; /* Темнее синий */
+}
+
+.done-task {
+  border-left-color: #43a047; /* Слегка изменил зеленый */
+}
+
+.trash-task {
+  border-left-color: #e53935; /* Слегка изменил красный */
+}
+
+.clear-button {
+  background-color: #e53935; /* Другой оттенок красного */
+  color: white;
+  border: none;
+  padding: 16px 28px; /* Больше кнопка */
+  border-radius: 8px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); /* Более выраженная тень */
+  height: 50px; /* Фиксированная высота */
+}
