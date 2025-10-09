@@ -1,13 +1,7 @@
 import { createElement } from "../framework/render.js";
 
-function getColumnClass(title) {
-  const classes = {
-    Бэклог: "backlog",
-    "В процессе": "in-progress",
-    Готово: "done",
-    Корзина: "trash",
-  };
-  return classes[title] || "";
+function getColumnClass(status) {
+  return status;
 }
 
 function createTaskListComponentTemplate(title) {

@@ -1,0 +1,18 @@
+export const tasks = [
+  { id: 1, title: "Выучить JS", status: "backlog" },
+  { id: 2, title: "Выучить React", status: "backlog" },
+  { id: 3, title: "Сделать домашку", status: "backlog" },
+  { id: 4, title: "Прочитать книгу", status: "backlog" },
+  { id: 5, title: "Выпить смузи", status: "in-progress" },
+  { id: 6, title: "Попить воды", status: "in-progress" },
+  { id: 7, title: "Сделать зарядку", status: "in-progress" },
+  { id: 8, title: "Ответить на email", status: "in-progress" },
+  { id: 9, title: "Позвонить маме", status: "done" },
+  { id: 10, title: "Погладить кота", status: "done" },
+  { id: 11, title: "Приготовить обед", status: "done" },
+  { id: 12, title: "Вынести мусор", status: "done" },
+  { id: 13, title: "Сходить погулять", status: "trash" },
+  { id: 14, title: "Прочитать Войну и Мир", status: "trash" },
+  { id: 15, title: "Посмотреть фильм", status: "trash" },
+  { id: 16, title: "Выучить английский", status: "trash" },
+];
