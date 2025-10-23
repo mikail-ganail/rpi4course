@@ -1,39 +1,44 @@
-import { createElement } from "../framework/render.js";
+import AbstractComponent from "../framework/view/abstract-component.js";
 
 function createClearButtonTemplate() {
   return `<button class="clear-button">× Очистить</button>`;
 }
 
-export default class ClearBasketComponent {
+export default class ClearBasketComponent extends AbstractComponent {
+  #clearCallback = null;
+  #handleClearClick = null;
+  #eventAdded = false;
+
   constructor() {
-    this.handleClearClick = this.handleClearClick.bind(this);
-    this.clearCallback = null;
+    super();
+    this.#handleClearClick = this.#handleClearClick.bind(this);
   }
 
-  getTemplate() {
+  get template() {
     return createClearButtonTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-      this.element.addEventListener("click", this.handleClearClick);
+  get element() {
+    const element = super.element;
+    if (!this.#eventAdded) {
+      element.addEventListener("click", this.#handleClearClick);
+      this.#eventAdded = true;
     }
-
-    return this.element;
+    return element;
   }
 
-  handleClearClick() {
-    if (this.clearCallback) {
-      this.clearCallback();
+  #handleClearClick() {
+    if (this.#clearCallback) {
+      this.#clearCallback();
     }
   }
 
   setClearCallback(callback) {
-    this.clearCallback = callback;
+    this.#clearCallback = callback;
   }
 
   removeElement() {
-    this.element = null;
+    super.removeElement();
+    this.#eventAdded = false;
   }
 }

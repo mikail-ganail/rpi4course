@@ -1,6 +1,7 @@
 import TaskListComponent from "../view/task-list-component.js";
 import TaskComponent from "../view/task-component.js";
 import ClearBasketComponent from "../view/clear-basket-component.js";
+import NoTasksComponent from "../view/no-tasks-component.js";
 import { render, RenderPosition } from "../framework/render.js";
 import { STATUS_NAMES, STATUSES } from "../const.js";
 
@@ -37,16 +38,33 @@ export default class TasksBoardPresenter {
         (task) => task.status === status
       );
 
-      tasksForStatus.forEach((task) => {
-        const taskComponent = new TaskComponent(task);
-        render(taskComponent, tasksListContainer);
-      });
-
-      // Для корзины добавить кнопку очистки
-      if (status === STATUSES.TRASH) {
-        const clearBasketComponent = new ClearBasketComponent();
-        render(clearBasketComponent, tasksListContainer);
-      }
+      this.#renderTasksList(tasksForStatus, tasksListContainer);
+      this.#renderClearButton(status, tasksListContainer);
     });
+  }
+
+  #renderTask(task, container) {
+    const taskComponent = new TaskComponent(task);
+    render(taskComponent, container);
+  }
+
+  #renderStub(container) {
+    const noTasksComponent = new NoTasksComponent();
+    render(noTasksComponent, container);
+  }
+
+  #renderTasksList(tasksForStatus, container) {
+    if (tasksForStatus.length > 0) {
+      tasksForStatus.forEach((task) => this.#renderTask(task, container));
+    } else {
+      this.#renderStub(container);
+    }
+  }
+
+  #renderClearButton(status, container) {
+    if (status === STATUSES.TRASH) {
+      const clearBasketComponent = new ClearBasketComponent();
+      render(clearBasketComponent, container);
+    }
   }
 }
