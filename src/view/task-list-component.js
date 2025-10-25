@@ -4,10 +4,21 @@ function getColumnClass(status) {
   return status;
 }
 
+function getColumnHeader(status) {
+  const headers = {
+    'backlog': 'Бэклог',
+    'in-progress': 'В процессе',
+    'done': 'Готово',
+    'trash': 'Корзина'
+  };
+  return headers[status] || status;
+}
+
 function createTaskListComponentTemplate(title) {
   const columnClass = getColumnClass(title);
+  const header = getColumnHeader(title);
   return `<div class="task-column ${columnClass}">
-          <div class="column-header">${title}</div>
+          <div class="column-header">${header}</div>
           <div class="tasks-list">
           </div>
         </div>`;

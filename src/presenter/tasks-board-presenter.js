@@ -1,52 +1,71 @@
 import TaskListComponent from "../view/task-list-component.js";
 import TaskComponent from "../view/task-component.js";
-import ClearBasketComponent from "../view/clear-basket-component.js";
-import { render, RenderPosition } from "../framework/render.js";
-import { STATUS_NAMES, STATUSES } from "../const.js";
+import BoardComponent from "../view/board-component.js";
+import { render } from "../framework/render.js";
 
 export default class TasksBoardPresenter {
   #boardContainer = null;
-  #taskModel = null;
-  #boardComponent = null;
+  #tasksModel = null;
 
-  constructor(boardContainer, taskModel, boardComponent) {
+  tasksBoardComponent = new BoardComponent();
+  taskListComponent = new TaskListComponent();
+
+  #boardTasks = [];
+
+  constructor({ boardContainer, tasksModel }) {
     this.#boardContainer = boardContainer;
-    this.#taskModel = taskModel;
-    this.#boardComponent = boardComponent;
+    this.#tasksModel = tasksModel;
   }
 
   init() {
-    this.#renderBoard();
+    this.#boardTasks = [...this.#tasksModel.boardTasks];
+
+    render(this.tasksBoardComponent, this.#boardContainer);
+
+    const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
+
+    statusColumns.forEach(status => {
+      const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
+      const taskListComponent = new TaskListComponent(status);
+      render(taskListComponent, this.tasksBoardComponent.getElement());
+
+      tasksForStatus.forEach(task => {
+        const taskComponent = new TaskComponent(task);
+        render(taskComponent, taskListComponent.getElement());
+      });
+    });
   }
 
-  #renderBoard() {
-    const boardElement = this.#boardComponent.getElement();
-    const tasksContainer = boardElement.querySelector(".tasks-container");
+  addTask(title) {
+    const newTask = {
+      id: Date.now(),
+      title,
+      status: 'backlog'
+    };
+    this.#tasksModel.addTask(newTask);
+    this.#boardTasks = [...this.#tasksModel.boardTasks];
+    this.updateBoard();
+  }
 
-    const statuses = Object.keys(STATUS_NAMES);
+  updateBoard() {
+    this.tasksBoardComponent.getElement().innerHTML = '';
+    const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
 
-    statuses.forEach((status) => {
-      const statusName = STATUS_NAMES[status];
-      const taskListComponent = new TaskListComponent(statusName);
-      render(taskListComponent, tasksContainer);
+    statusColumns.forEach(status => {
+      const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
+      const taskListComponent = new TaskListComponent(status);
+      render(taskListComponent, this.tasksBoardComponent.getElement());
 
-      const taskListElement = taskListComponent.getElement();
-      const tasksListContainer = taskListElement.querySelector(".tasks-list");
-
-      const tasksForStatus = this.#taskModel.boardTasks.filter(
-        (task) => task.status === status
-      );
-
-      tasksForStatus.forEach((task) => {
+      tasksForStatus.forEach(task => {
         const taskComponent = new TaskComponent(task);
-        render(taskComponent, tasksListContainer);
+        render(taskComponent, taskListComponent.getElement());
       });
-
-      // Для корзины добавить кнопку очистки
-      if (status === STATUSES.TRASH) {
-        const clearBasketComponent = new ClearBasketComponent();
-        render(clearBasketComponent, tasksListContainer);
-      }
     });
+  }
+
+  clearTrash() {
+    this.#tasksModel.clearTrash();
+    this.#boardTasks = [...this.#tasksModel.boardTasks];
+    this.updateBoard();
   }
 }
