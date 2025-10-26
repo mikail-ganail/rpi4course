@@ -11,6 +11,13 @@ export default class TasksModel {
     this.#boardTasks.push(task);
   }
 
+  updateTaskStatus(taskId, newStatus) {
+    const task = this.#boardTasks.find(t => t.id === Number(taskId));
+    if (task) {
+      task.status = newStatus;
+    }
+  }
+
   clearTrash() {
     this.#boardTasks = this.#boardTasks.filter(task => task.status !== 'trash');
   }

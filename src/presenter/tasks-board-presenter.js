@@ -19,21 +19,54 @@ export default class TasksBoardPresenter {
 
   init() {
     this.#boardTasks = [...this.#tasksModel.boardTasks];
-
     render(this.tasksBoardComponent, this.#boardContainer);
+    this.#renderBoard();
+  }
 
+  #renderBoard() {
     const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
 
     statusColumns.forEach(status => {
       const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
       const taskListComponent = new TaskListComponent(status);
+      
+      // Устанавливаем обработчик для drop
+      taskListComponent.setTaskDropHandler((taskId, newStatus) => {
+        this.#handleTaskDrop(taskId, newStatus);
+      });
+
       render(taskListComponent, this.tasksBoardComponent.getElement());
 
       tasksForStatus.forEach(task => {
         const taskComponent = new TaskComponent(task);
-        render(taskComponent, taskListComponent.getElement());
+        render(taskComponent, taskListComponent.getElement().querySelector('.tasks-list'));
       });
     });
+  }
+
+  // init() {
+  //   this.#boardTasks = [...this.#tasksModel.boardTasks];
+
+  //   render(this.tasksBoardComponent, this.#boardContainer);
+
+  //   const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
+
+  //   statusColumns.forEach(status => {
+  //     const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
+  //     const taskListComponent = new TaskListComponent(status);
+  //     render(taskListComponent, this.tasksBoardComponent.getElement());
+
+  //     tasksForStatus.forEach(task => {
+  //       const taskComponent = new TaskComponent(task);
+  //       render(taskComponent, taskListComponent.getElement());
+  //     });
+  //   });
+  // }
+
+  #handleTaskDrop(taskId, newStatus) {
+    this.#tasksModel.updateTaskStatus(taskId, newStatus);
+    this.#boardTasks = [...this.#tasksModel.boardTasks];
+    this.updateBoard();
   }
 
   addTask(title) {
@@ -47,20 +80,25 @@ export default class TasksBoardPresenter {
     this.updateBoard();
   }
 
+  // updateBoard() {
+  //   this.tasksBoardComponent.getElement().innerHTML = '';
+  //   const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
+
+  //   statusColumns.forEach(status => {
+  //     const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
+  //     const taskListComponent = new TaskListComponent(status);
+  //     render(taskListComponent, this.tasksBoardComponent.getElement());
+
+  //     tasksForStatus.forEach(task => {
+  //       const taskComponent = new TaskComponent(task);
+  //       render(taskComponent, taskListComponent.getElement());
+  //     });
+  //   });
+  // }
+
   updateBoard() {
     this.tasksBoardComponent.getElement().innerHTML = '';
-    const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
-
-    statusColumns.forEach(status => {
-      const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
-      const taskListComponent = new TaskListComponent(status);
-      render(taskListComponent, this.tasksBoardComponent.getElement());
-
-      tasksForStatus.forEach(task => {
-        const taskComponent = new TaskComponent(task);
-        render(taskComponent, taskListComponent.getElement());
-      });
-    });
+    this.#renderBoard();
   }
 
   clearTrash() {

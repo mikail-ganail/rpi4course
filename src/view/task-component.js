@@ -4,7 +4,7 @@ function createTaskComponentTemplate(task) {
   const {title, status} = task;
 
   return (
-    `<div class="taskboard__item task--${status}">
+    `<div class="taskboard__item task--${status}" draggable="true" data-task-id="${task.id}">
     <div class="task__body">
       <p class="task--view">${title}</p>
       <input type="text" class="task--input" />
@@ -26,9 +26,17 @@ export default class TaskComponent {
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
+      this.#setDragHandlers();
     }
 
     return this.element;
+  }
+
+  #setDragHandlers() {
+    this.element.addEventListener('dragstart', (evt) => {
+      evt.dataTransfer.effectAllowed = 'move';
+      evt.dataTransfer.setData('text/plain', this.task.id);
+    });
   }
 
   removeElement() {
