@@ -17,19 +17,22 @@ export default class TasksBoardPresenter {
     this.#tasksModel = tasksModel;
   }
 
-  init() {
+  async init() {
+    await this.#tasksModel.init();
     this.#boardTasks = [...this.#tasksModel.boardTasks];
     render(this.tasksBoardComponent, this.#boardContainer);
     this.#renderBoard();
   }
 
   #renderBoard() {
-    const statusColumns = ['backlog', 'in-progress', 'done', 'trash'];
+    const statusColumns = ["backlog", "in-progress", "done", "trash"];
 
-    statusColumns.forEach(status => {
-      const tasksForStatus = this.#boardTasks.filter(task => task.status === status);
+    statusColumns.forEach((status) => {
+      const tasksForStatus = this.#boardTasks.filter(
+        (task) => task.status === status
+      );
       const taskListComponent = new TaskListComponent(status);
-      
+
       // Устанавливаем обработчик для drop
       taskListComponent.setTaskDropHandler((taskId, newStatus) => {
         this.#handleTaskDrop(taskId, newStatus);
@@ -37,9 +40,12 @@ export default class TasksBoardPresenter {
 
       render(taskListComponent, this.tasksBoardComponent.getElement());
 
-      tasksForStatus.forEach(task => {
+      tasksForStatus.forEach((task) => {
         const taskComponent = new TaskComponent(task);
-        render(taskComponent, taskListComponent.getElement().querySelector('.tasks-list'));
+        render(
+          taskComponent,
+          taskListComponent.getElement().querySelector(".tasks-list")
+        );
       });
     });
   }
@@ -73,7 +79,7 @@ export default class TasksBoardPresenter {
     const newTask = {
       id: Date.now(),
       title,
-      status: 'backlog'
+      status: "backlog",
     };
     this.#tasksModel.addTask(newTask);
     this.#boardTasks = [...this.#tasksModel.boardTasks];
@@ -97,7 +103,7 @@ export default class TasksBoardPresenter {
   // }
 
   updateBoard() {
-    this.tasksBoardComponent.getElement().innerHTML = '';
+    this.tasksBoardComponent.getElement().innerHTML = "";
     this.#renderBoard();
   }
 
