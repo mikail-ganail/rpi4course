@@ -12,6 +12,17 @@ export default class TasksApiService extends ApiService {
     return this._load({ url: "tasks" }).then(ApiService.parseResponse);
   }
 
+  async addTask(task) {
+    const response = await this._load({
+      url: "tasks",
+      method: Method.POST,
+      body: JSON.stringify(task),
+      headers: new Headers({ "Content-Type": "application/json" }),
+    });
+    console.log(response)
+    return ApiService.parseResponse(response);
+  }
+
   async createTask(task) {
     const response = await this._load({
       url: "tasks",

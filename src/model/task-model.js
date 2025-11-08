@@ -1,4 +1,7 @@
 import Observable from "../framework/observable.js";
+import { UserAction } from "../const.js";
+
+const generateId = () => Date.now();
 
 export default class TasksModel extends Observable {
   #tasksApiService = null;
@@ -25,8 +28,24 @@ export default class TasksModel extends Observable {
     return this.#boardTasks;
   }
 
-  addTask(task) {
-    this.#boardTasks.push(task);
+  // addTask(task) {
+  //   this.#boardTasks.push(task);
+  // }
+  async addTask(title) {
+    const newTask = {
+      title,
+      status: "backlog",
+      id: generateId(),
+    };
+    try {
+      const createdTask = await this.#tasksApiService.addTask(newTask);
+      this.#boardTasks.push(createdTask);
+      this._notify(UserAction.ADD_TASK, createdTask);
+      return createdTask;
+    } catch (err) {
+      console.error("Ошибка при добавлении задачи на сервер:", err);
+      throw err;
+    }
   }
 
   updateTaskStatus(taskId, newStatus) {
