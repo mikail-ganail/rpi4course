@@ -85,10 +85,12 @@ export default class TasksBoardPresenter {
   //   });
   // }
 
-  #handleTaskDrop(taskId, newStatus) {
-    this.#tasksModel.updateTaskStatus(taskId, newStatus);
-    this.#boardTasks = [...this.#tasksModel.boardTasks];
-    this.updateBoard();
+  async #handleTaskDrop(taskId, newStatus) {
+    try {
+      await this.#tasksModel.updateTaskStatus(taskId, newStatus);
+    } catch (err) {
+      console.error('Ошибка при обновлении статуса задачи:', err);
+    }
   }
 
   async addTask(title) {

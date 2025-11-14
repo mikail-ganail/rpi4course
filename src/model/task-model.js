@@ -48,10 +48,21 @@ export default class TasksModel extends Observable {
     }
   }
 
-  updateTaskStatus(taskId, newStatus) {
-    const task = this.#boardTasks.find((t) => t.id === Number(taskId));
+  async updateTaskStatus(taskId, newStatus) {
+    const task = this.#boardTasks.find((t) => t.id == taskId);
     if (task) {
+      const previousStatus = task.status;
       task.status = newStatus;
+
+      try {
+        const updatedTask = await this.#tasksApiService.updateTask(task);
+        Object.assign(task, updatedTask);
+        this._notify(UserAction.UPDATE_TASK, task);
+      } catch (err) {
+        console.error("Ошибка при обновлении статуса задачи на сервер:", err);
+        task.status = previousStatus;
+        throw err;
+      }
     }
   }
 
