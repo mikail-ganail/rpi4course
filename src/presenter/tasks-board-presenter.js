@@ -89,7 +89,7 @@ export default class TasksBoardPresenter {
     try {
       await this.#tasksModel.updateTaskStatus(taskId, newStatus);
     } catch (err) {
-      console.error('Ошибка при обновлении статуса задачи:', err);
+      console.error("Ошибка при обновлении статуса задачи:", err);
     }
   }
 
@@ -122,8 +122,8 @@ export default class TasksBoardPresenter {
     this.#renderBoard();
   }
 
-  clearTrash() {
-    this.#tasksModel.clearTrash();
+  async clearTrash() {
+    await this.#tasksModel.clearBasketTasks();
     this.#boardTasks = [...this.#tasksModel.boardTasks];
     this.updateBoard();
   }
@@ -138,4 +138,12 @@ export default class TasksBoardPresenter {
         break;
     }
   };
+
+  async #handleClearBasketClick() {
+    try {
+      await this.#tasksModel.clearBasketTasks();
+    } catch (err) {
+      console.error("Ошибка при очистке корзины:", err);
+    }
+  }
 }

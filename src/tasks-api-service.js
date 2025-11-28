@@ -38,7 +38,7 @@ export default class TasksApiService extends ApiService {
     const response = await this._load({
       url: `tasks/${task.id}`,
       method: Method.PUT,
-      body: JSON.stringify({ title: task.title, status: task.status }),
+      body: JSON.stringify(task),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
     const parsedResponse = await ApiService.parseResponse(response);

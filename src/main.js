@@ -32,8 +32,12 @@ addButton.addEventListener("click", () => {
   }
 });
 
-clearButton.addEventListener("click", () => {
-  tasksBoardPresenter.clearTrash();
+clearButton.addEventListener("click", async () => {
+  try {
+    await tasksBoardPresenter.clearTrash();
+  } catch (err) {
+    console.error("Ошибка при очистке корзины:", err);
+  }
 });
 
 tasksBoardPresenter.init();
