@@ -96,4 +96,75 @@ export const offersList: OffersList[] = [
     isPremium: false,
     rating: 4.8,
   },
+  {
+    id: "offer-amsterdam-2",
+    title: "Modern loft near Vondelpark",
+    type: "apartment",
+    price: 150,
+    previewImage: "/img/hotels/amsterdam-1.png",
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3609553943508,
+      longitude: 4.85309666406198,
+      zoom: 16,
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 4.6,
+  },
+
+  {
+    id: "offer-amsterdam-3",
+    title: "Cozy studio in historic center",
+    type: "studio",
+    price: 110,
+    previewImage: "/img/hotels/amsterdam-2.png",
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3619553943508,
+      longitude: 4.85409666406198,
+      zoom: 16,
+    },
+    isFavorite: true,
+    isPremium: false,
+    rating: 4.4,
+  },
+
+  {
+    id: "offer-amsterdam-4",
+    title: "Spacious family apartment with canal view",
+    type: "apartment",
+    price: 230,
+    previewImage: "/img/hotels/amsterdam-3.png",
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3629553943508,
+      longitude: 4.85209666406198,
+      zoom: 16,
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 4.9,
+  },
 ];

@@ -28,7 +28,7 @@ const offers: FullOffer[] = [
     goods: ["Wi-Fi", "Heating", "Kitchen", "Coffee machine", "Washer"],
     host: {
       name: "Clément",
-      avatarUrl: "avatar-clement.jpg",
+      avatarUrl: "/img/avatar.svg",
       isPro: true,
     },
     images: ["/img/hotels/paris.png"],
@@ -62,7 +62,7 @@ const offers: FullOffer[] = [
     goods: ["Wi-Fi", "Towels", "Dishwasher", "Air conditioning"],
     host: {
       name: "Laura",
-      avatarUrl: "avatar-laura.jpg",
+      avatarUrl: "/img/avatar.svg",
       isPro: false,
     },
     images: ["/img/hotels/cologne.png"],
@@ -102,7 +102,7 @@ const offers: FullOffer[] = [
     ],
     host: {
       name: "Marie",
-      avatarUrl: "avatar-marie.jpg",
+      avatarUrl: "/img/avatar.svg",
       isPro: true,
     },
     images: ["/img/hotels/brussels.png"],
@@ -117,8 +117,8 @@ const offers: FullOffer[] = [
     city: {
       name: "Amsterdam",
       location: {
-        latitude: 52.37454,
-        longitude: 4.897976,
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
         zoom: 13,
       },
     },
@@ -136,12 +136,115 @@ const offers: FullOffer[] = [
     goods: ["Wi-Fi", "Kitchen", "Washer", "Towels", "Coffee machine"],
     host: {
       name: "Angelina",
-      avatarUrl: "avatar-angelina.jpg",
+      avatarUrl: "/img/avatar.svg",
       isPro: true,
     },
     images: ["/img/hotels/amsterdam.png"],
     maxAdults: 3,
   },
+
+  {
+    id: "offer-amsterdam-2",
+    title: "Modern loft near Vondelpark",
+    type: "apartment",
+    price: 150,
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3609553943508,
+      longitude: 4.85309666406198,
+      zoom: 16,
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 4.6,
+    description:
+      "Bright modern loft within walking distance from Vondelpark, perfect for weekend trips.",
+    bedrooms: 1,
+    goods: ["Wi-Fi", "Heating", "Kitchen", "Dishwasher"],
+    host: {
+      name: "Thomas",
+      avatarUrl: "/img/avatar.svg",
+      isPro: false,
+    },
+    images: ["/img/hotels/amsterdam-1.png"],
+    maxAdults: 2,
+  },
+
+  {
+    id: "offer-amsterdam-3",
+    title: "Cozy studio in historic center",
+    type: "studio",
+    price: 110,
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3619553943508,
+      longitude: 4.85409666406198,
+      zoom: 16,
+    },
+    isFavorite: true,
+    isPremium: false,
+    rating: 4.4,
+    description:
+      "Small but cozy studio located in a quiet street of the historic center.",
+    bedrooms: 1,
+    goods: ["Wi-Fi", "Towels", "Coffee machine"],
+    host: {
+      name: "Eva",
+      avatarUrl: "/img/avatar.svg",
+      isPro: true,
+    },
+    images: ["/img/hotels/amsterdam-2.png"],
+    maxAdults: 2,
+  },
+
+  {
+    id: "offer-amsterdam-4",
+    title: "Spacious family apartment with canal view",
+    type: "apartment",
+    price: 230,
+    city: {
+      name: "Amsterdam",
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.3629553943508,
+      longitude: 4.85209666406198,
+      zoom: 16,
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 4.9,
+    description:
+      "Large family apartment with two bedrooms and panoramic canal views.",
+    bedrooms: 2,
+    goods: ["Wi-Fi", "Kitchen", "Washer", "Baby seat", "Fridge"],
+    host: {
+      name: "Martijn",
+      avatarUrl: "/img/avatar.svg",
+      isPro: true,
+    },
+    images: ["/img/hotels/amsterdam-3.png"],
+    maxAdults: 4,
+  },
+  
 ];
 
 export { offers };
