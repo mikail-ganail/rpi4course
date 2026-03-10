@@ -9,6 +9,12 @@ export const registration = async (req, res, next) => {
     if (!email || !password) {
       return next(ApiError.badRequest("Некорректный email или password"));
     }
+    if (!username || !userType) {
+      return next(ApiError.badRequest("Не указаны username или userType"));
+    }
+    if (!["normal", "pro"].includes(userType)) {
+      return next(ApiError.badRequest("Недопустимое значение userType"));
+    }
 
     const candidate = await User.findOne({ where: { email } });
     if (candidate) {
@@ -17,7 +23,7 @@ export const registration = async (req, res, next) => {
       );
     }
 
-    const avatarImage = `/static/${req.file.filename}`;
+    const avatarImage = req.file ? `/static/${req.file.filename}` : null;
 
     const hashPassword = await bcrypt.hash(password, 5);
 
@@ -39,6 +45,7 @@ export const registration = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error(error); // для отладки
     next(ApiError.internal("Ошибка регистрации"));
   }
 };
