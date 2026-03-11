@@ -121,4 +121,35 @@ const getFullOffer = async (req, res, next) => {
   }
 };
 
+export const getFavoriteOffers = async (req, res, next) => {
+  try {
+    const offers = await Offer.findAll({
+      where: { isFavorite: true },
+    });
+    const adaptedOffers = offers.map(adaptOfferToClient);
+    res.json(adaptedOffers);
+  } catch (error) {
+    next(ApiError.internal("Ошибка при получении избранных предложений"));
+  }
+};
+
+export const toggleFavorite = async (req, res, next) => {
+  try {
+    const { offerId, status } = req.params;
+    const offer = await Offer.findByPk(offerId);
+    if (!offer) {
+      return next(ApiError.badRequest("Предложение не найдено"));
+    }
+
+    const isFavorite = status === "1" || status === "true";
+    offer.isFavorite = isFavorite;
+    await offer.save();
+
+    const adaptedOffer = adaptOfferToClient(offer);
+    res.json(adaptedOffer);
+  } catch (error) {
+    next(ApiError.internal("Ошибка при изменении избранного"));
+  }
+};
+
 export { getAllOffers, getFullOffer };
