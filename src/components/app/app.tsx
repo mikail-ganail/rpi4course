@@ -26,10 +26,6 @@ function App(): JSX.Element {
     dispatch(checkAuthAction());
   }, [dispatch]);
 
-  // Отладка
-  console.log("Offers loaded:", offers.length);
-  console.log("Loading status:", isOffersDataLoading);
-  console.log("Auth status:", authorizationStatus);
 
   if (
     authorizationStatus === AuthorizationStatus.Unknown ||

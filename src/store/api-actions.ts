@@ -1,13 +1,17 @@
 import { AxiosInstance } from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AppDispatch, State } from "../types/state.js";
-import { OffersList } from "../types/offer.js";
+import { OffersList, FullOffer, Review } from "../types/offer.js";
 import {
   offersCityList,
   requireAuthorization,
   setError,
   setOffersDataLoadingStatus,
   setUserData,
+  setFullOffer,
+  setNearbyOffers,
+  setReviews,
+  setFullOfferLoadingStatus,
 } from "./action";
 import { saveToken, dropToken } from "../services/token";
 import { APIRoute, AuthorizationStatus, TIMEOUT_SHOW_ERROR } from "../const";
@@ -18,9 +22,8 @@ export const clearErrorAction = createAsyncThunk("clearError", () => {
   setTimeout(() => store.dispatch(setError(null)), TIMEOUT_SHOW_ERROR);
 });
 
-// ИСПРАВЛЕНО: возвращаем данные и используем правильный тип
 export const fetchOffersAction = createAsyncThunk<
-  OffersList[], // <-- возвращаем массив офферов
+  OffersList[],
   undefined,
   {
     dispatch: AppDispatch;
@@ -52,20 +55,126 @@ export const fetchOffersAction = createAsyncThunk<
         isFavorite: item.isFavorite,
         isPremium: item.isPremium,
         rating: item.rating,
-        // другие поля по необходимости
       };
     });
 
     dispatch(offersCityList(adaptedOffers));
-    return adaptedOffers; // <-- возвращаем данные
+    return adaptedOffers;
   } catch (error) {
     console.error("Failed to fetch offers:", error);
     dispatch(setError("Failed to load offers"));
-    throw error; // <-- пробрасываем ошибку для rejected состояния
+    throw error;
   } finally {
     dispatch(setOffersDataLoadingStatus(false));
   }
 });
+
+// НОВЫЙ ACTION: загрузка полного оффера
+export const fetchFullOfferAction = createAsyncThunk<
+  FullOffer,
+  string,
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>("data/fetchFullOffer", async (id, { dispatch, extra: api }) => {
+  dispatch(setFullOfferLoadingStatus(true));
+  try {
+    const { data } = await api.get<FullOffer>(`${APIRoute.Offers}/${id}`);
+    dispatch(setFullOffer(data));
+    // Если в ответе есть nearbyOffers, сохраняем их
+    // if (data.nearbyOffers) {
+    //   dispatch(setNearbyOffers(data.nearbyOffers));
+    // }
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch offer:", error);
+    dispatch(setError("Failed to load offer"));
+    throw error;
+  } finally {
+    dispatch(setFullOfferLoadingStatus(false));
+  }
+});
+
+// НОВЫЙ ACTION: загрузка комментариев
+export const fetchReviewsAction = createAsyncThunk<
+  Review[],
+  string,
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>("data/fetchReviews", async (offerId, { dispatch, extra: api }) => {
+  try {
+    const { data } = await api.get<Review[]>(`${APIRoute.Comments}/${offerId}`);
+    dispatch(setReviews(data));
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+    dispatch(setError("Failed to load reviews"));
+    throw error;
+  }
+});
+
+// НОВЫЙ ACTION: отправка комментария
+export const postReviewAction = createAsyncThunk<
+  Review,
+  { offerId: string; rating: number; comment: string },
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>(
+  "data/postReview",
+  async ({ offerId, rating, comment }, { dispatch, extra: api }) => {
+    try {
+      const { data } = await api.post<Review>(
+        `${APIRoute.Comments}/${offerId}`,
+        {
+          rating: Number(rating),
+          comment,
+        },
+      );
+      // После успешной отправки обновляем список комментариев
+      dispatch(fetchReviewsAction(offerId));
+      return data;
+    } catch (error) {
+      console.error("Failed to post review:", error);
+      dispatch(setError("Failed to post review"));
+      throw error;
+    }
+  },
+);
+
+// НОВЫЙ ACTION: переключение избранного
+export const toggleFavoriteAction = createAsyncThunk<
+  OffersList,
+  { offerId: string; status: boolean },
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>(
+  "data/toggleFavorite",
+  async ({ offerId, status }, { dispatch, extra: api }) => {
+    try {
+      const { data } = await api.post<OffersList>(
+        `${APIRoute.Favorite}/${offerId}/${status}`,
+      );
+      // Обновляем оффер в списке
+      dispatch(fetchOffersAction());
+      return data;
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+      dispatch(setError("Failed to update favorite"));
+      throw error;
+    }
+  },
+);
 
 export const checkAuthAction = createAsyncThunk<
   void,

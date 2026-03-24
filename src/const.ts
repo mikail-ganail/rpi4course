@@ -1,8 +1,8 @@
 export enum AppRoute {
+  Main = '/',
   Login = '/login',
   Favorites = '/favorites',
   Offer = '/offer',
-  Main = '/',
   NotFound = '*'
 }
 
@@ -28,10 +28,15 @@ export const CITIES_LOCATION = [
   { name: 'Dusseldorf', location: { latitude: 51.225402, longitude: 6.776314, zoom: 13 } },
 ] as const;
 
-export const APIRoute = {
-    Offers : '/offers',
-    Login : '/login',
-    Logout : '/logout'
-};
+export enum APIRoute {
+  Offers = '/offers',
+  Comments = '/comments',
+  Favorite = '/favorite',
+  Login = '/login',
+  Logout = '/logout',
+  Register = '/register',
+}
 
 export const TIMEOUT_SHOW_ERROR = 2000;
+export const BACKEND_URL = 'http://localhost:5000';
+export const REQUEST_TIMEOUT = 5000;

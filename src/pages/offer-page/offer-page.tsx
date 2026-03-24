@@ -1,77 +1,79 @@
-import { JSX, useState } from "react";
-import { useParams } from "react-router-dom";
-import { NotFoundPage } from "../not-found-page/not-found-page";
+import { JSX, useState, useEffect } from "react";
+import { useParams, Navigate } from "react-router-dom";
 import { ReviewForm } from "../../components/review-form/review-form";
 import { ReviewsList } from "../../components/reviews-list/reviews-list";
-import { reviews as initialReviews } from "../../mocks/reviews";
 import { useAppDispatch, useAppSelector } from "../../hooks";
+import {
+  fetchFullOfferAction,
+  fetchReviewsAction,
+  postReviewAction,
+} from "../../store/api-actions";
 import { toggleFavorite } from "../../store/action";
 import { Header } from "../../components/header/header";
 import { Map } from "../../components/map/map";
-import { FullOffer } from "../../types/offer";
 import { LoadingScreen } from "../../components/loading-screen/loading-screen";
 import { CitiesCard } from "../../components/cities-card/cities-card";
+import { AuthorizationStatus } from "../../const";
 
 function OfferPage(): JSX.Element {
-  const params = useParams();
+  const { id } = useParams();
   const dispatch = useAppDispatch();
 
+  const offer = useAppSelector((state) => state.fullOffer);
   const offers = useAppSelector((state) => state.offers);
-  const isOffersDataLoading = useAppSelector(
-    (state) => state.isOffersDataLoading,
+  const reviews = useAppSelector((state) => state.reviews);
+  const isLoading = useAppSelector((state) => state.isFullOfferLoading);
+  const authorizationStatus = useAppSelector(
+    (state) => state.authorizationStatus,
   );
-  const [currentReviews, setCurrentReviews] = useState(initialReviews);
 
-  // Показываем загрузку, если данные еще загружаются
-  if (isOffersDataLoading) {
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchFullOfferAction(id));
+      dispatch(fetchReviewsAction(id));
+    }
+  }, [dispatch, id]);
+
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Ищем оффер по id (приводим к строке для корректного сравнения)
-  const foundOffer = offers.find((item) => String(item.id) === params.id);
-
-  console.log("params.id:", params.id);
-  console.log(
-    "offers ids:",
-    offers.map((o) => String(o.id)),
-  );
-  console.log("foundOffer:", foundOffer);
-
-  // Если оффер не найден, показываем 404
-  if (!foundOffer) {
-    return <NotFoundPage />;
+  if (!offer) {
+    return <Navigate to="/404" replace />;
   }
 
-  const offer = foundOffer as unknown as FullOffer;
-  const ratingWidth = Math.round(offer.rating) * 20 + "%";
+  // Получаем nearbyOffers из offers (исключаем текущий)
   const nearbyOffers = offers
     .filter((o) => String(o.id) !== String(offer.id))
     .slice(0, 3);
-  const mapPoints = [foundOffer, ...nearbyOffers];
 
-  const handleReviewSubmit = (rating: number, comment: string) => {
-    const newReview = {
-      id: String(Date.now()),
-      user: {
-        id: "user-999",
-        name: "Me",
-        avatarUrl: "/img/avatar-max.jpg",
-        isPro: false,
-      },
-      rating,
-      comment,
-      date: new Date().toISOString(),
-    };
-    setCurrentReviews([newReview, ...currentReviews]);
-  };
+  const ratingWidth = Math.round(offer.rating) * 20 + "%";
+  const mapPoints = [offer, ...nearbyOffers];
 
   const handleFavoriteClick = () => {
     dispatch(toggleFavorite(offer.id));
   };
 
+  const handleReviewSubmit = (rating: number, comment: string) => {
+    if (id) {
+      dispatch(postReviewAction({ offerId: id, rating, comment }));
+    }
+  };
+
+  const cleanUrl = (url: string) => {
+    if (!url) return "";
+    return url.replace("http://localhost:5000", "");
+  };
+
+  const galleryImages = (offer.photos || [offer.previewImage])
+    .slice(0, 6)
+    .map(cleanUrl);
+  // Получаем список удобств
+  const goodsList = offer.features || [];
+  console.log(offer)
+
   return (
     <div className="page">
-      {/* SVG спрайты */}
       <div style={{ display: "none" }}>
         <svg xmlns="http://www.w3.org/2000/svg">
           <symbol id="icon-arrow-select" viewBox="0 0 7 4">
@@ -100,20 +102,11 @@ function OfferPage(): JSX.Element {
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              {(offer.images || [offer.previewImage])
-                .slice(0, 6)
-                .map((item, index) => (
-                  <div
-                    key={`${item}-${index}`}
-                    className="offer__image-wrapper"
-                  >
-                    <img
-                      className="offer__image"
-                      src={item}
-                      alt="Photo studio"
-                    />
-                  </div>
-                ))}
+              {galleryImages.slice(0, 6).map((item, index) => (
+                <div key={`${item}-${index}`} className="offer__image-wrapper">
+                  <img className="offer__image" src={item} alt="Photo studio" />
+                </div>
+              ))}
             </div>
           </div>
           <div className="offer__container container">
@@ -150,10 +143,10 @@ function OfferPage(): JSX.Element {
                   {offer.type}
                 </li>
                 <li className="offer__feature offer__feature--bedrooms">
-                  {offer.bedrooms || 3} Bedrooms
+                  {offer.bedrooms} Bedrooms
                 </li>
                 <li className="offer__feature offer__feature--adults">
-                  Max {offer.maxAdults || 4} adults
+                  Max {offer.maxAdults} adults
                 </li>
               </ul>
               <div className="offer__price">
@@ -163,7 +156,7 @@ function OfferPage(): JSX.Element {
               <div className="offer__inside">
                 <h2 className="offer__inside-title">What&apos;s inside</h2>
                 <ul className="offer__inside-list">
-                  {(offer.goods || []).map((item) => (
+                  {goodsList.map((item) => (
                     <li key={item} className="offer__inside-item">
                       {item}
                     </li>
@@ -198,12 +191,12 @@ function OfferPage(): JSX.Element {
               <section className="offer__reviews reviews">
                 <h2 className="reviews__title">
                   Reviews &middot;{" "}
-                  <span className="reviews__amount">
-                    {currentReviews.length}
-                  </span>
+                  <span className="reviews__amount">{reviews.length}</span>
                 </h2>
-                <ReviewsList reviews={currentReviews} />
-                <ReviewForm onSubmit={handleReviewSubmit} />
+                <ReviewsList reviews={reviews} />
+                {authorizationStatus === AuthorizationStatus.Auth && (
+                  <ReviewForm onSubmit={handleReviewSubmit} />
+                )}
               </section>
             </div>
           </div>
