@@ -16,6 +16,47 @@ tags:
   - name: Offers
   - name: Reviews
 paths:
+  /register:
+    post:
+      tags:
+        - Users
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - username
+                - userType
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                username:
+                  type: string
+                  example: john_doe
+                userType:
+                  type: string
+                  enum: [normal, pro]
+                  example: normal
+                avatar:
+                  type: string
+                  format: binary
+                  description: Аватар пользователя
+      responses:
+        "200":
+          description: Пользователь успешно зарегистрирован
+        "400":
+          description: Ошибка валидации
   /login:
     post:
       summary: Авторизация пользователя
@@ -38,6 +79,27 @@ paths:
       responses:
         "200":
           description: Успешный логин, возвращает токен
+    get:
+      tags:
+        - Users
+      summary: Проверка авторизации
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Пользователь авторизован
+        "401":
+          description: Не авторизован
+  /logout:
+    delete:
+      tags:
+        - Users
+      summary: Выход из системы
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Успешный выход
   /offers:
     post:
       summary: Создание нового предложения
@@ -89,7 +151,8 @@ paths:
                   type: number
                 features:
                   type: string
-                  description: JSON-строка массива из значений 'Breakfast', 'Air conditioning',
+                  description:
+                    JSON-строка массива из значений 'Breakfast', 'Air conditioning',
                     'Laptop friendly workspace', 'Baby seat', 'Washer',
                     'Towels', 'Fridge'
                 commentsCount:
@@ -117,3 +180,142 @@ paths:
           description: Ошибка валидации данных
         "401":
           description: Не авторизован
+    get:
+      tags:
+        - Offers
+      summary: Получение списка всех предложений
+      responses:
+        "200":
+          description: Список предложений
+        "500":
+          description: Ошибка сервера
+  /offers/{id}:
+    get:
+      tags:
+        - Offers
+      summary: Получение полной информации о предложении
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID предложения
+      responses:
+        "200":
+          description: Полная информация о предложении
+        "404":
+          description: Предложение не найдено
+        "500":
+          description: Ошибка сервера
+  /favorite:
+    get:
+      tags:
+        - Offers
+      summary: Получение избранных предложений
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список избранных предложений
+        "401":
+          description: Не авторизован
+        "500":
+          description: Ошибка сервера
+
+  /favorite/{offerId}/{status}:
+    post:
+      tags:
+        - Offers
+      summary: Добавление/удаление из избранного
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID предложения
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [true, false, 1, 0]
+          description: Статус избранного (true/1 - добавить, false/0 - удалить)
+      responses:
+        "200":
+          description: Статус избранного обновлен
+        "400":
+          description: Предложение не найдено
+        "401":
+          description: Не авторизован
+        "404":
+          description: Предложение не найдено
+        "500":
+          description: Ошибка сервера
+  /comments/{offerId}:
+    get:
+      tags:
+        - Reviews
+      summary: Получение отзывов для предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID предложения
+      responses:
+        "200":
+          description: Список отзывов
+        "404":
+          description: Предложение не найдено
+        "500":
+          description: Ошибка сервера
+
+    post:
+      tags:
+        - Reviews
+      summary: Добавление отзыва
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID предложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - comment
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 4
+                comment:
+                  type: string
+                  minLength: 5
+                  maxLength: 1024
+                  example: "Great place to stay! Very comfortable and clean."
+      responses:
+        "201":
+          description: Отзыв успешно добавлен
+        "400":
+          description: Ошибка валидации
+        "401":
+          description: Не авторизован
+        "404":
+          description: Предложение не найдено
+        "500":
+          description: Ошибка сервера
