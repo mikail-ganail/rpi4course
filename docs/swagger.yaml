@@ -151,10 +151,7 @@ paths:
                   type: number
                 features:
                   type: string
-                  description:
-                    JSON-строка массива из значений 'Breakfast', 'Air conditioning',
-                    'Laptop friendly workspace', 'Baby seat', 'Washer',
-                    'Towels', 'Fridge'
+                  description: "JSON-строка массива из значений 'Breakfast', 'Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'"
                 commentsCount:
                   type: integer
                 latitude:
