@@ -4,6 +4,7 @@ import { AppRoute } from "../../const";
 import { FullOffer } from "../../types/offer";
 import { useAppDispatch } from "../../hooks";
 import { toggleFavoriteAction } from "../../store/api-actions";
+import { getImageUrl } from "../../utils/api";
 
 type FavoritesCardProps = {
   offer: FullOffer;
@@ -35,7 +36,7 @@ function FavoritesCard({ offer }: FavoritesCardProps): JSX.Element {
         <Link to={`${AppRoute.Offer}/${offer.id}`}>
           <img
             className="place-card__image"
-            src={offer.previewImage}
+            src={getImageUrl(offer.previewImage)}
             width="150"
             height="110"
             alt="Place image"

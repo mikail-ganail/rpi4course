@@ -1,3 +1,4 @@
+// mocks.ts
 import { faker } from '@faker-js/faker';
 import { AuthorizationStatus, CITIES_LOCATION } from '../const';
 import type { InitialState } from '../store/reducer';
@@ -22,21 +23,23 @@ export function makeFakeOffer(): OffersList {
     previewImage: faker.image.url(),
   };
 }
+
 export function makeFakeFullOffer(): FullOffer {
   return {
     ...makeFakeOffer(),
     description: faker.lorem.paragraph(),
     bedrooms: faker.number.int({ min: 1, max: 5 }),
-    goods: [faker.commerce.productName(), faker.commerce.productName()],
+    features: [faker.commerce.productName(), faker.commerce.productName()],
     host: {
       name: faker.person.fullName(),
       avatarUrl: faker.image.avatar(),
       isPro: faker.datatype.boolean(),
     },
-    images: [faker.image.url(), faker.image.url()],
+    photos: [faker.image.url(), faker.image.url()],
     maxAdults: faker.number.int({ min: 1, max: 10 }),
   };
 }
+
 export function makeFakeReview(): Review {
   return {
     id: faker.string.uuid(),
@@ -50,6 +53,7 @@ export function makeFakeReview(): Review {
     },
   };
 }
+
 export function makeFakeStore(
   overrides: Partial<InitialState> = {}
 ): InitialState {
@@ -60,6 +64,9 @@ export function makeFakeStore(
     user: null,
     error: null,
     isOffersDataLoading: false,
+    reviews: [],
+    fullOffer: null,           // добавить
+    isFullOfferLoading: false, // добавить
     ...overrides,
   };
 }

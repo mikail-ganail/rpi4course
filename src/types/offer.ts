@@ -28,9 +28,9 @@ export type OfferLocation = {
     rating: number;
     description: string;
     bedrooms: number;
-    goods: string[];
+    features: string[];
     host: HostOffer;
-    images: string[];
+    photos: string[];
     maxAdults: number;
     previewImage: string; 
   };

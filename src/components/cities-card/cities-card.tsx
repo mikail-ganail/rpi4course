@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { OffersList } from "../../types/offer";
 import { useAppDispatch } from "../../hooks";
 import { toggleFavoriteAction } from "../../store/api-actions";
+import { getImageUrl } from "../../utils/api";
 
 type CitiesCardProps = {
   offer: OffersList;
@@ -80,7 +81,7 @@ function CitiesCard({
         <Link to={`/offer/${id}`}>
           <img
             className="place-card__image"
-            src={previewImage}
+            src={getImageUrl(previewImage)}
             alt="Place image"
             style={imageStyle}
           />

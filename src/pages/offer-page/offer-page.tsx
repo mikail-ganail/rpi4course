@@ -1,77 +1,91 @@
-import { JSX, useState } from "react";
-import { useParams } from "react-router-dom";
-import { NotFoundPage } from "../not-found-page/not-found-page";
+import { JSX, useEffect } from "react";
+import { useParams, Navigate } from "react-router-dom";
 import { ReviewForm } from "../../components/review-form/review-form";
 import { ReviewsList } from "../../components/reviews-list/reviews-list";
-import { reviews as initialReviews } from "../../mocks/reviews";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { toggleFavorite } from "../../store/action";
+import {
+  fetchFullOfferAction,
+  toggleFavoriteAction,
+  fetchReviewsAction,
+  postReviewAction,
+} from "../../store/api-actions";
 import { Header } from "../../components/header/header";
 import { Map } from "../../components/map/map";
-import { FullOffer } from "../../types/offer";
 import { LoadingScreen } from "../../components/loading-screen/loading-screen";
 import { CitiesCard } from "../../components/cities-card/cities-card";
+import { AuthorizationStatus } from "../../const";
+import { getImageUrl } from "../../utils/api";
 
 function OfferPage(): JSX.Element {
-  const params = useParams();
+  const { id } = useParams();
   const dispatch = useAppDispatch();
 
+  const fullOffer = useAppSelector((state) => state.fullOffer);
   const offers = useAppSelector((state) => state.offers);
-  const isOffersDataLoading = useAppSelector(
-    (state) => state.isOffersDataLoading,
+  const reviews = useAppSelector((state) => state.reviews);
+  const isLoading = useAppSelector((state) => state.isFullOfferLoading);
+  const authorizationStatus = useAppSelector(
+    (state) => state.authorizationStatus,
   );
-  const [currentReviews, setCurrentReviews] = useState(initialReviews);
 
-  // Показываем загрузку, если данные еще загружаются
-  if (isOffersDataLoading) {
+  useEffect(() => {
+    console.log("useEffect сработал, id:", id);
+    if (id) {
+      console.log("Вызываю fetchFullOfferAction для id:", id);
+      dispatch(fetchFullOfferAction(id));
+      dispatch(fetchReviewsAction(id));
+    } else {
+      console.log("id нет");
+    }
+  }, [dispatch, id]);
+
+  console.log("=== OfferPage Debug ===");
+  console.log("id из URL:", id);
+  console.log("fullOffer из store:", fullOffer);
+  console.log("isLoading:", isLoading);
+  console.log("offers в store:", offers.length);
+
+  // Сначала проверяем, есть ли id
+  if (!id) {
+    return <Navigate to="/404" replace />;
+  }
+
+  // Если загрузка не началась и fullOffer null - начинаем загрузку
+  if (!isLoading && !fullOffer) {
+    return <LoadingScreen />; // или просто показываем загрузку
+  }
+
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Ищем оффер по id (приводим к строке для корректного сравнения)
-  const foundOffer = offers.find((item) => String(item.id) === params.id);
-
-  console.log("params.id:", params.id);
-  console.log(
-    "offers ids:",
-    offers.map((o) => String(o.id)),
-  );
-  console.log("foundOffer:", foundOffer);
-
-  // Если оффер не найден, показываем 404
-  if (!foundOffer) {
-    return <NotFoundPage />;
+  if (!fullOffer) {
+    return <Navigate to="/404" replace />;
   }
 
-  const offer = foundOffer as unknown as FullOffer;
-  const ratingWidth = Math.round(offer.rating) * 20 + "%";
+  const ratingWidth = Math.round(fullOffer.rating) * 20 + "%";
   const nearbyOffers = offers
-    .filter((o) => String(o.id) !== String(offer.id))
+    .filter((o) => String(o.id) !== String(fullOffer.id))
     .slice(0, 3);
-  const mapPoints = [foundOffer, ...nearbyOffers];
+  const mapPoints = [fullOffer, ...nearbyOffers];
 
   const handleReviewSubmit = (rating: number, comment: string) => {
-    const newReview = {
-      id: String(Date.now()),
-      user: {
-        id: "user-999",
-        name: "Me",
-        avatarUrl: "/img/avatar-max.jpg",
-        isPro: false,
-      },
-      rating,
-      comment,
-      date: new Date().toISOString(),
-    };
-    setCurrentReviews([newReview, ...currentReviews]);
+    if (id) {
+      dispatch(postReviewAction({ offerId: id, rating, comment }));
+    }
   };
 
   const handleFavoriteClick = () => {
-    dispatch(toggleFavorite(offer.id));
+    dispatch(
+      toggleFavoriteAction({
+        offerId: fullOffer.id,
+        status: !fullOffer.isFavorite,
+      }),
+    );
   };
 
   return (
     <div className="page">
-      {/* SVG спрайты */}
       <div style={{ display: "none" }}>
         <svg xmlns="http://www.w3.org/2000/svg">
           <symbol id="icon-arrow-select" viewBox="0 0 7 4">
@@ -100,7 +114,10 @@ function OfferPage(): JSX.Element {
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              {(offer.images || [offer.previewImage])
+              {(fullOffer.photos && fullOffer.photos.length > 0
+                ? fullOffer.photos
+                : []
+              )
                 .slice(0, 6)
                 .map((item, index) => (
                   <div
@@ -109,7 +126,7 @@ function OfferPage(): JSX.Element {
                   >
                     <img
                       className="offer__image"
-                      src={item}
+                      src={getImageUrl(item)}
                       alt="Photo studio"
                     />
                   </div>
@@ -118,15 +135,15 @@ function OfferPage(): JSX.Element {
           </div>
           <div className="offer__container container">
             <div className="offer__wrapper">
-              {offer.isPremium && (
+              {fullOffer.isPremium && (
                 <div className="offer__mark">
                   <span>Premium</span>
                 </div>
               )}
               <div className="offer__name-wrapper">
-                <h1 className="offer__name">{offer.title}</h1>
+                <h1 className="offer__name">{fullOffer.title}</h1>
                 <button
-                  className={`offer__bookmark-button button ${offer.isFavorite ? "offer__bookmark-button--active" : ""}`}
+                  className={`offer__bookmark-button button ${fullOffer.isFavorite ? "offer__bookmark-button--active" : ""}`}
                   type="button"
                   onClick={handleFavoriteClick}
                 >
@@ -142,28 +159,28 @@ function OfferPage(): JSX.Element {
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">
-                  {offer.rating}
+                  {fullOffer.rating}
                 </span>
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">
-                  {offer.type}
+                  {fullOffer.type}
                 </li>
                 <li className="offer__feature offer__feature--bedrooms">
-                  {offer.bedrooms || 3} Bedrooms
+                  {fullOffer.bedrooms} Bedrooms
                 </li>
                 <li className="offer__feature offer__feature--adults">
-                  Max {offer.maxAdults || 4} adults
+                  Max {fullOffer.maxAdults} adults
                 </li>
               </ul>
               <div className="offer__price">
-                <b className="offer__price-value">&euro;{offer.price}</b>
+                <b className="offer__price-value">&euro;{fullOffer.price}</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
               <div className="offer__inside">
                 <h2 className="offer__inside-title">What&apos;s inside</h2>
                 <ul className="offer__inside-list">
-                  {(offer.goods || []).map((item) => (
+                  {(fullOffer.features || []).map((item) => (
                     <li key={item} className="offer__inside-item">
                       {item}
                     </li>
@@ -174,40 +191,47 @@ function OfferPage(): JSX.Element {
                 <h2 className="offer__host-title">Meet the host</h2>
                 <div className="offer__host-user user">
                   <div
-                    className={`offer__avatar-wrapper user__avatar-wrapper ${offer.host?.isPro ? "offer__avatar-wrapper--pro" : ""}`}
+                    className={`offer__avatar-wrapper user__avatar-wrapper ${fullOffer.host?.isPro ? "offer__avatar-wrapper--pro" : ""}`}
                   >
                     <img
                       className="offer__avatar user__avatar"
-                      src={offer.host?.avatarUrl || "/img/avatar.svg"}
+                      src={
+                        getImageUrl(fullOffer.host?.avatarUrl) ||
+                        "/img/avatar.svg"
+                      }
                       width="74"
                       height="74"
                       alt="Host avatar"
                     />
                   </div>
                   <span className="offer__user-name">
-                    {offer.host?.name || "Host"}
+                    {fullOffer.host?.name || "Host"}
                   </span>
-                  {offer.host?.isPro && (
+                  {fullOffer.host?.isPro && (
                     <span className="offer__user-status">Pro</span>
                   )}
                 </div>
                 <div className="offer__description">
-                  <p className="offer__text">{offer.description || ""}</p>
+                  <p className="offer__text">{fullOffer.description || ""}</p>
                 </div>
               </div>
               <section className="offer__reviews reviews">
                 <h2 className="reviews__title">
                   Reviews &middot;{" "}
-                  <span className="reviews__amount">
-                    {currentReviews.length}
-                  </span>
+                  <span className="reviews__amount">{reviews.length}</span>
                 </h2>
-                <ReviewsList reviews={currentReviews} />
-                <ReviewForm onSubmit={handleReviewSubmit} />
+                <ReviewsList reviews={reviews} />
+                {authorizationStatus === AuthorizationStatus.Auth && (
+                  <ReviewForm onSubmit={handleReviewSubmit} />
+                )}
               </section>
             </div>
           </div>
-          <Map city={offer.city} points={mapPoints} selectedPoint={offer} />
+          <Map
+            city={fullOffer.city}
+            points={mapPoints}
+            selectedPoint={fullOffer}
+          />
         </section>
         <div className="container">
           <section className="near-places places">

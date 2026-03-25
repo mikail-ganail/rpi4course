@@ -32,7 +32,8 @@ export const APIRoute = {
     Offers : '/offers',
     Login : '/login',
     Logout : '/logout',
-    Favorite: '/favorite'
+    Favorite: '/favorite',
+    Comments: '/comments',
 };
 
 export const TIMEOUT_SHOW_ERROR = 2000;
