@@ -1,26 +1,29 @@
-
-import { JSX } from 'react';
-import { FullOffer } from '../../types/offer';
-import { FavoritesCard } from '../favorites-card/favorites-card';
+import { JSX } from "react";
+import { FullOffer } from "../../types/offer";
+import { FavoritesCard } from "../favorites-card/favorites-card";
 
 type FavoritesListProps = {
   offers: FullOffer[];
-}
+};
 
 function FavoritesList({ offers }: FavoritesListProps): JSX.Element {
   const favoriteOffers = offers.filter((offer) => offer.isFavorite);
-  
-  const cities = Array.from(new Set(favoriteOffers.map((offer) => offer.city.name)));
+
+  const cities = Array.from(
+    new Set(favoriteOffers.map((offer) => offer.city.name)),
+  );
 
   if (favoriteOffers.length === 0) {
     return (
-       <section className="favorites favorites--empty">
-          <h1 className="visually-hidden">Favorites (empty)</h1>
-          <div className="favorites__status-wrapper">
-            <b className="favorites__status">Nothing yet saved.</b>
-            <p className="favorites__status-description">Save properties to narrow down search or plan your future trips.</p>
-          </div>
-       </section>
+      <section className="favorites favorites--empty">
+        <h1 className="visually-hidden">Favorites (empty)</h1>
+        <div className="favorites__status-wrapper">
+          <b className="favorites__status">Nothing yet saved.</b>
+          <p className="favorites__status-description">
+            Save properties to narrow down search or plan your future trips.
+          </p>
+        </div>
+      </section>
     );
   }
 

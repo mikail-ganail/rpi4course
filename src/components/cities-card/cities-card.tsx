@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import classNames from "classnames";
 import { OffersList } from "../../types/offer";
 import { useAppDispatch } from "../../hooks";
-import { toggleFavorite } from "../../store/action";
+import { toggleFavoriteAction } from "../../store/api-actions";
 
 type CitiesCardProps = {
   offer: OffersList;
@@ -39,7 +39,27 @@ function CitiesCard({
 
   const handleFavoriteClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
-    dispatch(toggleFavorite(id));
+    evt.stopPropagation();
+    dispatch(
+      toggleFavoriteAction({
+        offerId: id,
+        status: !isFavorite,
+      }),
+    );
+  };
+
+  // Общие стили для контейнера изображения
+  const imageWrapperStyle = {
+    width: "200px",
+    height: "150px",
+    overflow: "hidden" as const,
+    borderRadius: "12px",
+  };
+
+  const imageStyle = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover" as const,
   };
 
   return (
@@ -53,14 +73,16 @@ function CitiesCard({
           <span>Premium</span>
         </div>
       )}
-      <div className={`${cardType}__image-wrapper place-card__image-wrapper`}>
+      <div
+        className={`${cardType}__image-wrapper place-card__image-wrapper`}
+        style={imageWrapperStyle}
+      >
         <Link to={`/offer/${id}`}>
           <img
             className="place-card__image"
             src={previewImage}
-            width="260"
-            height="200"
             alt="Place image"
+            style={imageStyle}
           />
         </Link>
       </div>
@@ -71,18 +93,17 @@ function CitiesCard({
             <span className="place-card__price-text">&#47;&nbsp;night</span>
           </div>
           <button
-            className={classNames("place-card__bookmark-button", "button", {
-              "place-card__bookmark-button--active": isFavorite,
-            })}
-            type="button"
             onClick={handleFavoriteClick}
+            style={{
+              marginLeft: "10px",
+              background: "none",
+              border: "none",
+              fontSize: "18px",
+              cursor: "pointer",
+              color: isFavorite ? "#4481c3" : "#757575",
+            }}
           >
-            <svg className="place-card__bookmark-icon" width="18" height="19">
-              <use xlinkHref="#icon-bookmark"></use>
-            </svg>
-            <span className="visually-hidden">
-              {isFavorite ? "In bookmarks" : "To bookmarks"}
-            </span>
+            {isFavorite ? "★" : "☆"}
           </button>
         </div>
         <div className="place-card__rating rating">

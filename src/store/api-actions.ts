@@ -119,3 +119,49 @@ export const logoutAction = createAsyncThunk<
   dispatch(setUserData(null));
   dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
 });
+
+// В файле store/api-actions.ts добавьте:
+
+export const fetchFavoritesAction = createAsyncThunk<
+  OffersList[],
+  undefined,
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>("data/fetchFavorites", async (_arg, { dispatch, extra: api }) => {
+  try {
+    const { data } = await api.get<OffersList[]>(APIRoute.Favorite);
+    // Обновляем офферы в store, помечая избранные
+    dispatch(offersCityList(data));
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch favorites:", error);
+    dispatch(setError("Failed to load favorites"));
+    throw error;
+  }
+});
+
+export const toggleFavoriteAction = createAsyncThunk<
+  OffersList,
+  { offerId: string; status: boolean },
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+  }
+>("data/toggleFavorite", async ({ offerId, status }, { dispatch, extra: api }) => {
+  try {
+    const { data } = await api.post<OffersList>(
+      `${APIRoute.Favorite}/${offerId}/${status}`,
+    );
+    // Обновляем список офферов
+    dispatch(fetchOffersAction());
+    return data;
+  } catch (error) {
+    console.error("Failed to toggle favorite:", error);
+    dispatch(setError("Failed to update favorite"));
+    throw error;
+  }
+});

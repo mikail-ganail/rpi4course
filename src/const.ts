@@ -31,7 +31,8 @@ export const CITIES_LOCATION = [
 export const APIRoute = {
     Offers : '/offers',
     Login : '/login',
-    Logout : '/logout'
+    Logout : '/logout',
+    Favorite: '/favorite'
 };
 
 export const TIMEOUT_SHOW_ERROR = 2000;

@@ -1,15 +1,28 @@
-
-import { JSX } from 'react';
-import { Link } from 'react-router-dom';
-import { AppRoute } from '../../const';
-import { FullOffer } from '../../types/offer';
+import { JSX, MouseEvent } from "react";
+import { Link } from "react-router-dom";
+import { AppRoute } from "../../const";
+import { FullOffer } from "../../types/offer";
+import { useAppDispatch } from "../../hooks";
+import { toggleFavoriteAction } from "../../store/api-actions";
 
 type FavoritesCardProps = {
   offer: FullOffer;
-}
+};
 
 function FavoritesCard({ offer }: FavoritesCardProps): JSX.Element {
-  const ratingWidth = Math.round(offer.rating) * 20 + '%';
+  const dispatch = useAppDispatch();
+  const ratingWidth = Math.round(offer.rating) * 20 + "%";
+
+  const handleFavoriteClick = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    dispatch(
+      toggleFavoriteAction({
+        offerId: offer.id,
+        status: false,
+      }),
+    );
+  };
 
   return (
     <article className="favorites__card place-card">
@@ -20,7 +33,13 @@ function FavoritesCard({ offer }: FavoritesCardProps): JSX.Element {
       )}
       <div className="favorites__image-wrapper place-card__image-wrapper">
         <Link to={`${AppRoute.Offer}/${offer.id}`}>
-          <img className="place-card__image" src={offer.previewImage} width="150" height="110" alt="Place image" />
+          <img
+            className="place-card__image"
+            src={offer.previewImage}
+            width="150"
+            height="110"
+            alt="Place image"
+          />
         </Link>
       </div>
       <div className="favorites__card-info place-card__info">
@@ -29,7 +48,12 @@ function FavoritesCard({ offer }: FavoritesCardProps): JSX.Element {
             <b className="place-card__price-value">&euro;{offer.price}</b>
             <span className="place-card__price-text">&#47;&nbsp;night</span>
           </div>
-          <button className="place-card__bookmark-button place-card__bookmark-button--active button" type="button">
+          <button
+            className="place-card__bookmark-button place-card__bookmark-button--active button"
+            type="button"
+            onClick={handleFavoriteClick}
+            aria-label="Remove from bookmarks"
+          >
             <svg className="place-card__bookmark-icon" width="18" height="19">
               <use href="#icon-bookmark"></use>
             </svg>
